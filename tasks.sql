@@ -14,3 +14,28 @@ ORDER BY o.Cost ASC;
 
 /* Task 3 */
 SELECT MenuName FROM Menus WHERE menuID = ANY (SELECT DISTINCT MenuID FROM Orders WHERE Quantity > 2);
+
+/* Exercise: Create optimized queries to manage and analyze data */
+
+/* Task 1 */
+DELIMITER $$
+CREATE PROCEDURE GetMaxQuantity()
+BEGIN
+SELECT MAX(Quantity) FROM Orders;
+END$$
+DELIMITER ;
+
+/* Task 2 
+   Note that multiple results can be returned as a customer can make multiple orders…
+   This is the case if you loaded my fixtures file.
+*/
+PREPARE GetOrderDetail FROM 'SELECT OrderID, Quantity, Cost FROM Orders WHERE CustomerID = ?';
+set @id = 1;
+Execute GetOrderDetail using @id;
+
+/* Task 3 */
+CREATE PROCEDURE CancelOrder(IN id INT)
+BEGIN
+DELETE FROM Orders WHERE OrderID = id;
+SELECT CONCAT("Order ", id, " is cancelled") AS Confirmation;
+END
